@@ -8,13 +8,18 @@ class Player:
     
     def decrease_hp(self, damage: int):#Function for Decreasing hp
         self.current_hp -= damage
-        if self.current_hp > 1:
+        if self.current_hp < 1:
             print("GG")
 
     def incrase_hp(self, healing: int):#Function for Increasing hp
         self.current_hp += healing
         if self.current_hp > self.max_hp:
             self.current_hp = self.max_hp
+
+if __name__ == "__main__":
+    player = Player()
+    player.decrease_hp(10)
+    print(player.current_hp)
 
 
         
