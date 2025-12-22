@@ -1,3 +1,17 @@
+class Game:
+
+    def __init__(self, player, enemy):
+        self.player = player
+        self.enemy = enemy
+    def start_game(self):
+        while True:
+            print("===================================")
+            print(f"Player: \n HP: {self.player.current_hp}\n weapon: {self.player.current_weapon}")
+            break
+
+
+
+
 class Weapon:
 
     def __init__(self, dmg_multiplier):
@@ -60,14 +74,8 @@ class Goblin(Enemy):
 
 if __name__ == "__main__":#For testing
     player = Player()
-    player.decrease_hp(10)
-    print(player.current_hp)
-    weapon = Sword()
-    player.equip_weapon(weapon)
     goblin = Goblin()
-    goblin.attack(player)
-    print(player.current_hp)
-    player.attack(goblin)
-    print(goblin.hp)
+    game = Game(player, goblin)
+    game.start_game()
 
         
