@@ -10,6 +10,7 @@ class Sword(Weapon):
 
     def swing(self, player_attack_power):
         print(self.dmg_multiplier * player_attack_power)
+        return self.dmg_multiplier * player_attack_power
 
 class Player:
     
@@ -36,9 +37,11 @@ class Player:
     def attack(self):#Function for attacking
         if self.current_weapon != None:
             self.current_weapon.swing(self.attack_power)
+            return self.current_weapon.swing(self.attack_power)
         
         else:
             print(self.attack_power)
+            return print(self.attack_power)
 
 class Ennemy:
 
