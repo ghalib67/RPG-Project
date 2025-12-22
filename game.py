@@ -41,7 +41,7 @@ class Player:
         
         else:
             print(self.attack_power)
-            return print(self.attack_power)
+            return self.attack_power
 
 class Enemy:
 
@@ -54,6 +54,9 @@ class Goblin(Enemy):
     def __init__(self):
         super().__init__(30, 7)
 
+    def attack(self, player):
+        player.current_hp -= self.attack_power
+
 if __name__ == "__main__":#For testing
     player = Player()
     player.decrease_hp(10)
@@ -62,6 +65,8 @@ if __name__ == "__main__":#For testing
     weapon = Sword()
     player.equip_weapon(weapon)
     player.attack()
-
+    goblin = Goblin()
+    goblin.attack(player)
+    print(player.current_hp)
 
         
