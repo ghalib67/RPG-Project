@@ -7,6 +7,9 @@ class Game:
         while True:
             print("===================================")
             print(f"Player: \n HP: {self.player.current_hp}\n weapon: {self.player.current_weapon}")
+            print("-----------------------------------")
+            print(f"Enemy: \n HP: {self.enemy.current_hp}\n Attack: {self.enemy.attack_power}")
+            print("===================================")
             break
 
 
@@ -25,6 +28,10 @@ class Sword(Weapon):
     def swing(self, player_attack_power):
         print(self.dmg_multiplier * player_attack_power)
         return self.dmg_multiplier * player_attack_power
+    
+    def __str__(self):
+        return "SWORD!!!!!!"
+
 
 class Player:
     
@@ -61,7 +68,7 @@ class Player:
 class Enemy:
 
     def __init__(self, hp: int, attack_power: int):
-        self.hp = hp
+        self.current_hp = hp
         self.attack_power = attack_power
 
 
@@ -76,6 +83,8 @@ if __name__ == "__main__":#For testing
     player = Player()
     goblin = Goblin()
     game = Game(player, goblin)
+    game.start_game()
+    player.equip_weapon(Sword())
     game.start_game()
 
         
