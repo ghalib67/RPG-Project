@@ -1,3 +1,8 @@
+class Game:
+
+    def __init__(self):
+        self.name = "Game"   
+
 class Weapon:
 
     def __init__(self, dmg_multiplier):
