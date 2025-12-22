@@ -52,7 +52,7 @@ class Enemy:
 
 class Goblin(Enemy):
     def __init__(self):
-        super().__init__(3, 7)
+        super().__init__(30, 7)
 
 if __name__ == "__main__":#For testing
     player = Player()
