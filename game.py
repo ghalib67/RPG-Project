@@ -21,6 +21,13 @@ class Player:
         self.attack_power = 7
         self.current_weapon = None
 
+    def dmg_done(self):#fUNTION TO BE ABLE TO CALCULATE DMG
+        if self.current_weapon != None:
+            return self.current_weapon.dmg_multiplier * self.attack_power
+        
+        else:
+            return self.attack_power
+
     def decrease_hp(self, damage: int):#Function for Decreasing hp
         self.current_hp -= damage
         if self.current_hp < 1:
@@ -34,14 +41,8 @@ class Player:
     def equip_weapon(self, weapon: Weapon):
         self.current_weapon = weapon
     
-    def attack(self):#Function for attacking
-        if self.current_weapon != None:
-            self.current_weapon.swing(self.attack_power)
-            return self.current_weapon.swing(self.attack_power)
-        
-        else:
-            print(self.attack_power)
-            return self.attack_power
+    def attack(self, enemy):#Function for attacking
+        enemy.hp -= self.dmg_done()
 
 class Enemy:
 
@@ -61,12 +62,12 @@ if __name__ == "__main__":#For testing
     player = Player()
     player.decrease_hp(10)
     print(player.current_hp)
-    player.attack()
     weapon = Sword()
     player.equip_weapon(weapon)
-    player.attack()
     goblin = Goblin()
     goblin.attack(player)
     print(player.current_hp)
+    player.attack(goblin)
+    print(goblin.hp)
 
         
