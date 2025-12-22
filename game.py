@@ -11,7 +11,6 @@ class Sword(Weapon):
     def swing(self, player_attack_power):
         print(self.dmg_multiplier * player_attack_power)
 
-
 class Player:
     
     def __init__(self):
@@ -39,7 +38,15 @@ class Player:
             self.current_weapon.swing(self.attack_power)
         
         else:
-            print("he didnt..... </3")
+            print(self.attack_power)
+
+class Ennemy:
+
+    def __init__(self, hp: int, attack_power: int):
+        self.hp = hp
+        self.attack_power = attack_power
+
+        
 
 if __name__ == "__main__":#For testing
     player = Player()
