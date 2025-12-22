@@ -43,13 +43,16 @@ class Player:
             print(self.attack_power)
             return print(self.attack_power)
 
-class Ennemy:
+class Enemy:
 
     def __init__(self, hp: int, attack_power: int):
         self.hp = hp
         self.attack_power = attack_power
 
-        
+
+class Goblin(Enemy):
+    def __init__(self):
+        super().__init__(3, 7)
 
 if __name__ == "__main__":#For testing
     player = Player()
