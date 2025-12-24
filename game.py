@@ -17,18 +17,10 @@ Enemy:
     Attack: {self.enemy.attack_power}
 ========================""")
 
-    def choose_action(self):
-        return int(input(
-f"""
-Please choose an action:
-    1. Attack
-    2. Show game state
-"""))
-                           
     def start_game(self):
         while self.player.status == "Alive":
             self.print_state()
-            choice = self.choose_action()
+            choice = self.player.choose_action()
             match choice:
                 case 1:
                     self.player.attack(self.enemy)
@@ -88,6 +80,14 @@ class Player:
     
     def attack(self, enemy):#Function for attacking
         enemy.current_hp -= self.dmg_done()
+
+    def choose_action(self):
+            return int(input(
+                f"""
+    Please choose an action:
+        1. Attack
+        2. Show game state
+    """))
 
 class Enemy:
 
