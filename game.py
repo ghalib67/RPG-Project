@@ -32,14 +32,10 @@ Please choose an action:
             match choice:
                 case 1:
                     self.player.attack(self.enemy)
+                    self.enemy.attack(self.player)
                 
                 case 2:
                     self.print_state()
-            break
-    
-
-
-
 
 class Weapon:
 
