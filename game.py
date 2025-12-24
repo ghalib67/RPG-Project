@@ -6,6 +6,7 @@ class Game:
     def __init__(self, player, enemy):
         self.player = player
         self.enemy = enemy
+        self.player.enemy = self.enemy
     
     def print_state(self):
                     print(
@@ -25,16 +26,14 @@ Enemy:
 f"""
 Please choose an action:
     1. Attack
-    2. Show game state
+    2. Heal
+    3. Show game state
 """))
+
     def take_turn(self):
-        match self.choose_action():
-            case 1:
-                self.player.attack(self.enemy)
-                random.choice(self.enemy.actions)()
-            case 2:
-                self.print_state()
-                self.take_turn()
+        choice = self.choose_action()
+        self.player.actions[choice]()
+        random.choice(self.enemy.actions)()
 
     def start_game(self):
         while self.player.status == "Alive":
@@ -68,6 +67,8 @@ class Player:
         self.attack_power = 7
         self.current_weapon = None
         self.status = "Alive"
+        self.enemy = None
+        self.actions = {1: self.attack, 2: self.heal}
 
     def dmg_done(self):#fUNTION TO BE ABLE TO CALCULATE DMG
         if self.current_weapon != None:
@@ -82,20 +83,24 @@ class Player:
             self.status = "Dead"
             print("GG")
 
-    def incrase_hp(self, healing: int):#Function for Increasing hp
+    def increase_hp(self, healing: int):#Function for Increasing hp
         self.current_hp += healing
         if self.current_hp > self.max_hp:
             self.current_hp = self.max_hp
-    
+
+    def heal(self,amount=7):
+        if self.current_hp+amount < self.max_hp:
+            self.current_hp += amount
+
     def equip_weapon(self, weapon: Weapon):
         self.current_weapon = weapon
     
-    def attack(self, enemy):#Function for attacking
-        enemy.current_hp -= self.dmg_done()
+    def attack(self):#Function for attacking
+        self.enemy.current_hp -= self.dmg_done()
 
 class Enemy:
 
-    def __init__(self, hp: int, attack_power: int,target):
+    def __init__(self, hp: int, attack_power: int, target):
         self.current_hp = hp
         self.attack_power = attack_power
         self.actions = []
