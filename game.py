@@ -1,3 +1,6 @@
+import random
+
+
 class Game:
 
     def __init__(self, player, enemy):
@@ -24,18 +27,19 @@ Please choose an action:
     1. Attack
     2. Show game state
 """))
+    def take_turn(self):
+        match self.choose_action():
+            case 1:
+                self.player.attack(self.enemy)
+                random.choice(self.enemy.actions)()
+            case 2:
+                self.print_state()
+                self.take_turn()
 
     def start_game(self):
         while self.player.status == "Alive":
             self.print_state()
-            choice = self.choose_action()
-            match choice:
-                case 1:
-                    self.player.attack(self.enemy)
-                    self.enemy.attack(self.player)
-                
-                case 2:
-                    self.print_state()
+            self.take_turn()
 
 class Weapon:
 
@@ -91,26 +95,30 @@ class Player:
 
 class Enemy:
 
-    def __init__(self, hp: int, attack_power: int):
+    def __init__(self, hp: int, attack_power: int,target):
         self.current_hp = hp
         self.attack_power = attack_power
+        self.actions = []
+        self.target = target
+
 
 
 class Goblin(Enemy):
     
-    def __init__(self):
-        super().__init__(30, 7)
+    def __init__(self,target):
+        super().__init__(30, 7,target)
+        self.actions.append(self.attack,)
 
-    def attack(self, player):
-        player.decrease_hp(self.attack_power)
+    def attack(self):
+        self.target.decrease_hp(self.attack_power)
+
 
 if __name__ == "__main__":#For testing
     player = Player()
-    goblin = Goblin()
+    goblin = Goblin(player)
     game = Game(player, goblin)
     game.start_game()
     player.equip_weapon(Sword())
     game.start_game()
-    
 
         
