@@ -42,11 +42,13 @@ Enemy:
 
 
     def start_game(self):
-        while self.player.status == "Alive":
+        while self.player.status == "Alive" and self.enemy.status == "Alive":
             self.print_state()
             self.take_turn()
             keyboard.read_event()
             msvcrt.getch()
+
+        self.print_state()
         print("Game Over")
 
 class Weapon:
@@ -126,6 +128,7 @@ class Enemy:
         self.attack_power = attack_power
         self.actions = []
         self.target = target
+        self.status = "Alive"
 
 
 
@@ -140,6 +143,9 @@ class Goblin(Enemy):
 
     def get_attacked(self, damage):
         self.current_hp -= damage
+        if self.current_hp < 1:
+            self.current_hp = 0
+            self.status = "Dead"
 
 if __name__ == "__main__":#For testing
     player = Player()
