@@ -1,5 +1,5 @@
+import os
 import random
-
 
 class Game:
 
@@ -9,7 +9,8 @@ class Game:
         self.player.enemy = self.enemy
     
     def print_state(self):
-                    print(
+        os.system("cls")
+        print(
 f"""========================
 Player:
     HP: {self.player.current_hp}
@@ -32,6 +33,8 @@ Enemy:
         choice = self.choose_action()
         self.player.actions[choice]()
         random.choice(self.enemy.actions)()
+        print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
+
 
     def start_game(self):
         while self.player.status == "Alive":
@@ -87,7 +90,7 @@ class Player:
             self.current_hp = self.max_hp
 
     def heal(self,amount=7):
-        if self.current_hp+amount < self.max_hp:
+        if self.current_hp+amount <= self.max_hp:
             self.current_hp += amount
 
     def equip_weapon(self, weapon: Weapon):
