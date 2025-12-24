@@ -26,7 +26,7 @@ Please choose an action:
 """))
                            
     def start_game(self):
-        while True:
+        while self.player.status == "Alive":
             self.print_state()
             choice = self.choose_action()
             match choice:
@@ -67,6 +67,7 @@ class Player:
         self.current_hp = 30
         self.attack_power = 7
         self.current_weapon = None
+        self.status = "Alive"
 
     def dmg_done(self):#fUNTION TO BE ABLE TO CALCULATE DMG
         if self.current_weapon != None:
@@ -78,6 +79,7 @@ class Player:
     def decrease_hp(self, damage: int):#Function for Decreasing hp
         self.current_hp -= damage
         if self.current_hp < 1:
+            self.status = "Dead"
             print("GG")
 
     def incrase_hp(self, healing: int):#Function for Increasing hp
@@ -104,7 +106,7 @@ class Goblin(Enemy):
         super().__init__(30, 7)
 
     def attack(self, player):
-        player.current_hp -= self.attack_power
+        player.decrease_hp(self.attack_power)
 
 if __name__ == "__main__":#For testing
     player = Player()
