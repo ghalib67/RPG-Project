@@ -10,6 +10,8 @@ class Game:
     
     def print_state(self):
         os.system("cls")
+        print("\033[2J", end="")
+
         print(
 f"""========================
 Player:
@@ -26,6 +28,7 @@ Enemy:
         print("Please choose an action:")
         for i in self.player.actions:
             print(f"\t{i}: {self.player.actions[i].__name__.replace("_", " ").title()}")
+        print(f"\t{len(self.player.actions) + 1}: Something")
 
         return int(input())
 
@@ -69,7 +72,8 @@ class Player:
         self.current_weapon = None
         self.status = "Alive"
         self.enemy = None
-        self.actions = {1: self.attack, 2: self.heal}
+        self.actions = {1: self.attack, 2: self.heal, 3: self.block}
+        self.blocking = False
 
     def dmg_done(self):#fUNTION TO BE ABLE TO CALCULATE DMG
         if self.current_weapon != None:
@@ -84,20 +88,31 @@ class Player:
             self.status = "Dead"
             print("GG")
 
+    def get_attacked(self, damage):
+        if self.blocking == True:
+            damage = damage / 2
+            self.decrease_hp(damage)
+            self.blocking = False
+            return
+
+        self.decrease_hp(damage)
+
     def increase_hp(self, healing: int):#Function for Increasing hp
         self.current_hp += healing
         if self.current_hp > self.max_hp:
             self.current_hp = self.max_hp
 
-    def heal(self,amount=7):
-        if self.current_hp+amount <= self.max_hp:
-            self.current_hp += amount
+    def heal(self,amount=9):
+        self.increase_hp(amount)
 
     def equip_weapon(self, weapon: Weapon):
         self.current_weapon = weapon
     
     def attack(self):#Function for attacking
         self.enemy.current_hp -= self.dmg_done()
+
+    def block(self):
+        self.blocking = True
 
 class Enemy:
 
@@ -116,7 +131,7 @@ class Goblin(Enemy):
         self.actions.append(self.attack,)
 
     def attack(self):
-        self.target.decrease_hp(self.attack_power)
+        self.target.get_attacked(self.attack_power)
 
 
 if __name__ == "__main__":#For testing
