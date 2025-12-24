@@ -3,14 +3,40 @@ class Game:
     def __init__(self, player, enemy):
         self.player = player
         self.enemy = enemy
+    
+    def print_state(self):
+                    print(
+f"""========================
+Player:
+    HP: {self.player.current_hp}
+    Weapon: {self.player.current_weapon}
+    Attack: {self.player.attack_power}
+----------------------                      
+Enemy:
+    HP: {self.enemy.current_hp}
+    Attack: {self.enemy.attack_power}
+========================""")
+
+    def choose_action(self):
+        return int(input(
+f"""
+Please choose an action:
+    1. Attack
+    2. Show game state
+"""))
+                           
     def start_game(self):
         while True:
-            print("===================================")
-            print(f"Player: \n HP: {self.player.current_hp}\n weapon: {self.player.current_weapon}")
-            print("-----------------------------------")
-            print(f"Enemy: \n HP: {self.enemy.current_hp}\n Attack: {self.enemy.attack_power}")
-            print("===================================")
+            self.print_state()
+            choice = self.choose_action()
+            match choice:
+                case 1:
+                    self.player.attack(self.enemy)
+                
+                case 2:
+                    self.print_state()
             break
+    
 
 
 
@@ -63,7 +89,7 @@ class Player:
         self.current_weapon = weapon
     
     def attack(self, enemy):#Function for attacking
-        enemy.hp -= self.dmg_done()
+        enemy.current_hp -= self.dmg_done()
 
 class Enemy:
 
@@ -73,6 +99,7 @@ class Enemy:
 
 
 class Goblin(Enemy):
+    
     def __init__(self):
         super().__init__(30, 7)
 
@@ -86,5 +113,6 @@ if __name__ == "__main__":#For testing
     game.start_game()
     player.equip_weapon(Sword())
     game.start_game()
+    
 
         
