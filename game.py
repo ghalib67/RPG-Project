@@ -22,13 +22,11 @@ Enemy:
 ========================""")
 
     def choose_action(self):
-        return int(input(
-f"""
-Please choose an action:
-    1. Attack
-    2. Heal
-    3. Show game state
-"""))
+        print("Please choose an action:")
+        for i in self.player.actions:
+            print(f"\t{i}: {self.player.actions[i].__name__.replace("_", " ").title()}")
+
+        return int(input())
 
     def take_turn(self):
         choice = self.choose_action()
