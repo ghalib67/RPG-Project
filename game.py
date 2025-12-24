@@ -1,5 +1,7 @@
 import os
 import random
+import keyboard
+import msvcrt
 
 class Game:
 
@@ -43,7 +45,8 @@ Enemy:
         while self.player.status == "Alive":
             self.print_state()
             self.take_turn()
-
+            keyboard.read_event()
+            msvcrt.getch()
         print("Game Over")
 
 class Weapon:
@@ -111,7 +114,7 @@ class Player:
         self.current_weapon = weapon
     
     def attack(self):#Function for attacking
-        self.enemy.current_hp -= self.dmg_done()
+        self.enemy.get_attacked(self.dmg_done())
 
     def block(self):
         self.blocking = True
@@ -135,6 +138,8 @@ class Goblin(Enemy):
     def attack(self):
         self.target.get_attacked(self.attack_power)
 
+    def get_attacked(self, damage):
+        self.current_hp -= damage
 
 if __name__ == "__main__":#For testing
     player = Player()
