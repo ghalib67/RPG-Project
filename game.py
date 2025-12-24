@@ -28,7 +28,7 @@ Enemy:
         print("Please choose an action:")
         for i in self.player.actions:
             print(f"\t{i}: {self.player.actions[i].__name__.replace("_", " ").title()}")
-        print(f"\t{len(self.player.actions) + 1}: Something")
+        #print(f"\t{len(self.player.actions) + 1}: Something")
 
         return int(input())
 
@@ -43,6 +43,8 @@ Enemy:
         while self.player.status == "Alive":
             self.print_state()
             self.take_turn()
+
+        print("Game Over")
 
 class Weapon:
 
@@ -90,7 +92,7 @@ class Player:
 
     def get_attacked(self, damage):
         if self.blocking == True:
-            damage = damage / 2
+            damage = int(damage / 2)
             self.decrease_hp(damage)
             self.blocking = False
             return
