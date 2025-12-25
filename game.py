@@ -251,6 +251,8 @@ class Goblin(Enemy):
     def __init__(self, target):
         super().__init__(30, 7, target)
         self.actions.append(self.attack)
+        self.actions.append(self.block)
+        self.blocking = False
 
     def attack(self):
         # Attacks the player
@@ -258,10 +260,21 @@ class Goblin(Enemy):
 
     def get_attacked(self, damage):
         # Handles goblin damage
-        self.current_hp -= damage
+        if self.blocking:
+            damage = int(damage / 2)
+            self.current_hp -= damage
+            self.blocking = False
+
+        else:
+            self.current_hp -= damage
+
         if self.current_hp < 1:
             self.current_hp = 0
             self.status = "Dead"
+
+    def block(self):
+        # Reduces next incoming damage
+        self.blocking = True
 
 
 if __name__ == "__main__":
