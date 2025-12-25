@@ -3,9 +3,6 @@ import random
 import keyboard
 import msvcrt
 
-from IPython.lib.pretty import Printable
-
-
 class Game:
     # Handles the main game loop and turn system
 
@@ -22,7 +19,7 @@ class Game:
         print(
             f"""========================
 Player:
-    HP: {self.player.current_hp}
+    HP: {self.player.current_hp} {"#" if self.player.blocking else ""}
     Weapon: {self.player.current_weapon}
     Attack: {self.player.attack_power}
 ----------------------                      
@@ -280,10 +277,9 @@ class Goblin(Enemy):
 if __name__ == "__main__":
     # Basic inventory test
     player = Player()
-    player.collect_item(Sword())
-    player.equip_item()
-    print(player.current_weapon)
-    print(player.dmg_done())
+    enemy = Goblin(player)
+    game = Game(player,enemy)
+    game.start_game()
 
 
         
