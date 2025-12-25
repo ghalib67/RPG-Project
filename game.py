@@ -24,7 +24,7 @@ Player:
     Attack: {self.player.attack_power}
 ----------------------                      
 Enemy:
-    HP: {self.enemy.current_hp}
+    HP: {self.enemy.current_hp} {"#" if self.enemy.blocking else ""}
     Attack: {self.enemy.attack_power}
 ========================""")
 
@@ -39,9 +39,10 @@ Enemy:
     def take_turn(self):
         # Player acts first, then enemy performs a random action
         choice = self.choose_action()
-        self.player.actions[choice]()
-        random.choice(self.enemy.actions)()
         print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
+        self.player.actions[choice]()
+        if self.enemy.status == "Alive":
+            random.choice(self.enemy.actions)()
 
     def start_game(self):
         # Main game loop
