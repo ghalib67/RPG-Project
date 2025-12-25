@@ -3,6 +3,9 @@ import random
 import keyboard
 import msvcrt
 
+from IPython.lib.pretty import Printable
+
+
 class Game:
 
     def __init__(self, player, enemy):
@@ -50,24 +53,38 @@ Enemy:
 
         self.print_state()
         print("Game Over")
+class Item:
 
-class Weapon:
+    def __init__(self, name, classname):
+        self.name = name
+        self.classname =  classname
 
-    def __init__(self, dmg_multiplier):
+class Weapon(Item):
+
+    def __init__(self, dmg_multiplier,name):
+        super().__init__(name, "Weapon")
         self.dmg_multiplier = dmg_multiplier
+
+
+class Misc(Item):
+
+    def __init__(self, name):
+        super().__init__(name, "Misc")
 
 class Sword(Weapon):
 
     def __init__(self):
-        super().__init__(2)
+        super().__init__(2,"Sword")
 
     def swing(self, player_attack_power):
         print(self.dmg_multiplier * player_attack_power)
         return self.dmg_multiplier * player_attack_power
     
     def __str__(self):
-        return "SWORD!!!!!!"
+        return "Sword"
 
+    def __repr__(self):
+        return self.__str__()
 
 class Player:
     
@@ -81,6 +98,7 @@ class Player:
         self.enemy = None
         self.actions = {1: self.attack, 2: self.heal, 3: self.block}
         self.blocking = False
+        self.items = {"Weapons": {}, "Misc": {}}
 
     def dmg_done(self):#fUNTION TO BE ABLE TO CALCULATE DMG
         if self.current_weapon != None:
@@ -121,6 +139,34 @@ class Player:
     def block(self):
         self.blocking = True
 
+    def collect_item(self, item):
+        match item.classname:
+            case "Weapon":
+                self.items["Weapons"][item.name] = item
+
+            case "Misc":
+                self.items["Misc"][item.name] = item
+
+    def equip_item(self):
+        weapons = self.items["Weapons"]
+        if not weapons:
+            print("No weapons")
+            return
+
+        menu = {}
+
+        print("Choose a weapon:")
+        for i, weapon in enumerate(weapons.values(), start=1):
+            menu[i] = weapon
+            print(f"{i}: {weapon}")
+
+        choice = int(input("> "))
+        if choice in menu:
+            self.current_weapon = menu[choice]
+            print(f"Equipped {menu[choice]}")
+        else:
+            print("Invalid choice")
+
 class Enemy:
 
     def __init__(self, hp: int, attack_power: int, target):
@@ -148,11 +194,16 @@ class Goblin(Enemy):
             self.status = "Dead"
 
 if __name__ == "__main__":#For testing
-    player = Player()
+    """    player = Player()
     goblin = Goblin(player)
     game = Game(player, goblin)
-    game.start_game()
     player.equip_weapon(Sword())
     game.start_game()
+    game.start_game()"""
+    player = Player()
+    player.collect_item(Sword())
+    """~"""
+    print(player.current_weapon)
+    print(player.dmg_done())
 
         
