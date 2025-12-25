@@ -6,10 +6,30 @@ import msvcrt
 class Game:
     # Handles the main game loop and turn system
 
-    def __init__(self, player, enemy):
+    def __init__(self, player, enemies):
         self.player = player
-        self.enemy = enemy
+        self.enemies = enemies
+        self.choose_enemy()
         self.player.enemy = self.enemy  # Link player to enemy
+
+    def take_turn(self):
+        # Player acts first, then enemy performs a random action
+        choice = self.choose_action()
+        print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
+        self.player.actions[choice]()
+        if self.enemy.status == "Alive":
+            random.choice(self.enemy.actions)()
+
+    def print_start(self):
+        print("The game is starting...")
+        print(f"The current enemy is {self.enemy}!")
+        print("FIGHT!")
+        keyboard.read_event()
+
+    def enemy_defeated(self):
+        print(f"You defeated {self.enemy}")
+        self.choose_enemy()
+        self.player.enemy = self.enemy
 
     def print_state(self):
         # Clears the screen and prints current game stats
@@ -36,25 +56,38 @@ Enemy:
 
         return int(input())
 
-    def take_turn(self):
-        # Player acts first, then enemy performs a random action
-        choice = self.choose_action()
-        print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
-        self.player.actions[choice]()
-        if self.enemy.status == "Alive":
-            random.choice(self.enemy.actions)()
-
     def start_game(self):
-        # Main game loop
-        while self.player.status == "Alive" and self.enemy.status == "Alive":
-            self.print_state()
-            self.take_turn()
-            keyboard.read_event()  # Wait for keypress
-            msvcrt.getch()
+        self.print_start()
+
+        # Main game loop - continues while player is alive and enemies remain
+        while self.player.status == "Alive":
+            # Combat loop for current enemy
+            while self.player.status == "Alive" and self.enemy.status == "Alive":
+                self.print_state()
+                self.take_turn()
+                keyboard.read_event()
+                msvcrt.getch()
+
+            # Check if player died
+            if self.player.status == "Dead":
+                break
+
+            # Enemy is dead - check if more enemies exist
+            if len(self.enemies) > 0:
+                self.enemy_defeated() # Link new enemy
+            else:
+                # No more enemies - player wins!
+                break
 
         self.print_state()
-        print("Game Over")
+        if self.player.status == "Alive":
+            print("Victory! You defeated all enemies!")
+        else:
+            print("Game Over - You died!")
 
+    def choose_enemy(self):
+        self.enemy = random.choice(self.enemies)
+        self.enemies.remove(self.enemy)
 
 class Item:
     # Base class for all items
@@ -310,7 +343,8 @@ if __name__ == "__main__":
     player = Player()
     enemy = Goblin(player)
     enemy2 = Zombie(player)
-    game = Game(player,enemy)
+    enemies = [enemy,enemy2]
+    game = Game(player,enemies)
     game.start_game()
 
 
