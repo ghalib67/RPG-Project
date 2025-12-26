@@ -210,7 +210,15 @@ class Player:
 
     def attack(self):
         # Attacks the enemy
+        damage = self.dmg_done()
+        block = self.enemy.blocking
         self.enemy.get_attacked(self.dmg_done())
+
+        if block:
+            print(f"The enemy was blocking! you only did {damage//2} damage!")
+
+        else:
+            print(f"A clean hit! Did {damage} damage!")
 
     def block(self):
         # Reduces next incoming damage by half
@@ -330,8 +338,15 @@ class Goblin(Enemy):
         self.blocking = False
 
     def attack(self):
-        # Attacks the player
+        damage = self.attack_power
+        block = self.target.blocking
         self.target.get_attacked(self.attack_power)
+
+        if block:
+            print(f"You were blocking! The enemy only did {damage // 2} damage.")
+
+        else:
+            print(f"The enemy got a clean hit: {damage} damage.")
 
     def get_attacked(self, damage):
         # Handles incoming damage with blocking reduction
@@ -366,7 +381,15 @@ class Zombie(Enemy):
 
     def attack(self):
         # Attacks the player
+        damage = self.attack_power
+        block = self.target.blocking
         self.target.get_attacked(self.attack_power)
+
+        if block:
+            print(f"You were blocking! The enemy only did {damage // 2} damage.")
+
+        else:
+            print(f"The enemy got a clean hit: {damage} damage.")
 
     def get_attacked(self, damage):
         # Handles incoming damage with blocking reduction
