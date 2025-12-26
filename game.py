@@ -9,7 +9,7 @@ class Game:
     def __init__(self, player, enemies):
         self.player = player
         self.enemies = enemies
-        self.choose_enemy()
+        self.choose_enemy()  # Select first enemy at start
         self.player.enemy = self.enemy  # Link player to enemy
 
     def take_turn(self):
@@ -17,16 +17,19 @@ class Game:
         choice = self.choose_action()
         print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
         self.player.actions[choice]()
+        # Only allow enemy to act if still alive
         if self.enemy.status == "Alive":
             random.choice(self.enemy.actions)()
 
     def print_start(self):
+        # Display game start message
         print("The game is starting...")
         print(f"The current enemy is {self.enemy}!")
         print("FIGHT!")
         keyboard.read_event()
 
     def enemy_defeated(self):
+        # Handle enemy defeat and select next enemy
         print(f"You defeated {self.enemy}")
         self.choose_enemy()
         self.player.enemy = self.enemy
@@ -65,7 +68,7 @@ Enemy:
             while self.player.status == "Alive" and self.enemy.status == "Alive":
                 self.print_state()
                 self.take_turn()
-                keyboard.read_event()
+                keyboard.read_event()  # Wait for keypress
                 msvcrt.getch()
 
             # Check if player died
@@ -74,11 +77,12 @@ Enemy:
 
             # Enemy is dead - check if more enemies exist
             if len(self.enemies) > 0:
-                self.enemy_defeated() # Link new enemy
+                self.enemy_defeated()
             else:
                 # No more enemies - player wins!
                 break
 
+        # Display final game state and result
         self.print_state()
         if self.player.status == "Alive":
             print("Victory! You defeated all enemies!")
@@ -86,6 +90,7 @@ Enemy:
             print("Game Over - You died!")
 
     def choose_enemy(self):
+        # Randomly select and remove an enemy from the list
         self.enemy = random.choice(self.enemies)
         self.enemies.remove(self.enemy)
 
@@ -147,7 +152,7 @@ class Player:
         self.items = {"Weapons": {}, "Misc": {}}
 
     def dmg_done(self):
-        # Calculates outgoing damage
+        # Calculates outgoing damage with weapon multiplier
         if self.current_weapon is not None:
             return self.current_weapon.dmg_multiplier * self.attack_power
         return self.attack_power
@@ -160,11 +165,11 @@ class Player:
             print("GG")
 
     def get_attacked(self, damage):
-        # Handles incoming damage and blocking
+        # Handles incoming damage with blocking reduction
         if self.blocking:
             damage = int(damage / 2)
             self.decrease_hp(damage)
-            self.blocking = False
+            self.blocking = False  # Reset block after use
             return
 
         self.decrease_hp(damage)
@@ -188,7 +193,7 @@ class Player:
         self.enemy.get_attacked(self.dmg_done())
 
     def block(self):
-        # Reduces next incoming damage
+        # Reduces next incoming damage by half
         self.blocking = True
 
     def collect_item(self, item):
@@ -207,6 +212,7 @@ class Player:
         menu = {}
         miscmenu = {}
 
+        # Display available weapons
         if weapons:
             print("Weapons: ")
             for i, weapon in enumerate(weapons.values(), start=1):
@@ -215,6 +221,7 @@ class Player:
         else:
             print("No weapons available")
 
+        # Display available misc items
         if misc:
             print("Misc: ")
             for i, misc_item in enumerate(misc.values(), start=1):
@@ -227,6 +234,7 @@ class Player:
             print("You have no items.")
             return
 
+        # Item selection loop
         while True:
             print("\nChoose category:")
             print("1: Weapons")
@@ -277,7 +285,7 @@ class Enemy:
 
 
 class Goblin(Enemy):
-    # Simple enemy with only an attack action
+    # Goblin enemy with attack and block abilities
 
     def __init__(self, target):
         super().__init__(30, 7, target)
@@ -290,28 +298,29 @@ class Goblin(Enemy):
         self.target.get_attacked(self.attack_power)
 
     def get_attacked(self, damage):
-        # Handles goblin damage
+        # Handles incoming damage with blocking reduction
         if self.blocking:
             damage = int(damage / 2)
             self.current_hp -= damage
-            self.blocking = False
+            self.blocking = False  # Reset block after use
 
         else:
             self.current_hp -= damage
 
+        # Check for death
         if self.current_hp < 1:
             self.current_hp = 0
             self.status = "Dead"
 
     def block(self):
-        # Reduces next incoming damage
+        # Reduces next incoming damage by half
         self.blocking = True
 
     def __str__(self):
         return "Goblin"
 
 class Zombie(Enemy):
-    # Simple enemy with only an attack action
+    # Zombie enemy with high HP and low attack
 
     def __init__(self, target):
         super().__init__(50, 2, target)
@@ -324,33 +333,34 @@ class Zombie(Enemy):
         self.target.get_attacked(self.attack_power)
 
     def get_attacked(self, damage):
-        # Handles goblin damage
+        # Handles incoming damage with blocking reduction
         if self.blocking:
             damage = int(damage / 2)
             self.current_hp -= damage
-            self.blocking = False
+            self.blocking = False  # Reset block after use
 
         else:
             self.current_hp -= damage
 
+        # Check for death
         if self.current_hp < 1:
             self.current_hp = 0
             self.status = "Dead"
 
     def block(self):
-        # Reduces next incoming damage
+        # Reduces next incoming damage by half
         self.blocking = True
 
     def __str__(self):
         return "Zombie"
 
 if __name__ == "__main__":
-    # Basic inventory test
+    # Initialize game with player and enemies
     player = Player()
     enemy = Goblin(player)
     enemy2 = Zombie(player)
-    enemies = [enemy,enemy2]
-    game = Game(player,enemies)
+    enemies = [enemy, enemy2]
+    game = Game(player, enemies)
     game.start_game()
 
 
