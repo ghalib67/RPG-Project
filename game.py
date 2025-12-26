@@ -307,6 +307,9 @@ class Goblin(Enemy):
         # Reduces next incoming damage
         self.blocking = True
 
+    def __str__(self):
+        return "Goblin"
+
 class Zombie(Enemy):
     # Simple enemy with only an attack action
 
@@ -337,6 +340,9 @@ class Zombie(Enemy):
     def block(self):
         # Reduces next incoming damage
         self.blocking = True
+
+    def __str__(self):
+        return "Zombie"
 
 if __name__ == "__main__":
     # Basic inventory test
