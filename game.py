@@ -15,7 +15,7 @@ class Game:
         self.player.enemy = self.enemy  # Link player to enemy
 
     def countdown(self, timer):
-        for i in range(3, 0, -1):
+        for i in range(timer, 0, -1):
             print(i)
             time.sleep(1)
 
@@ -32,6 +32,42 @@ class Game:
     def print_start(self):
         # Display game start message
         print("The game is starting...")
+
+        self.countdown(5)
+
+        os.system("cls")
+        print("\033[2J", end="")
+
+        print(r"""
+        ==============================
+              ⚔️  TEXT RPG  ⚔️
+        ==============================
+
+        1. Play Game
+        2. Look at Scenery
+        0. Quit
+        """)
+
+        while True:
+            try:
+                choice = int(input("> "))
+                if choice in (0, 1, 2):
+                    match choice:
+                        case 1:
+                            break
+
+                        case 2:
+                            print("You stare at the black void..")
+                            continue
+
+                        case 0:
+                            print("in progress :p")
+                            continue
+
+                print("Invalid choice.")
+            except ValueError:
+                print("Enter a number.")
+
         print(f"The current enemy is {self.enemy}!")
         print("FIGHT!")
         self.countdown(3)
