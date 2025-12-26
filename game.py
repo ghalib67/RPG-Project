@@ -53,7 +53,7 @@ class Game:
             f"""========================
 Player:
     HP: {self.player.current_hp} {"🛡️" if self.player.blocking else ""}
-    Weapon: {self.player.current_weapon}
+    Weapon: {self.player.current_weapon if self.player.current_weapon is not None else "Hands (Rated E)"}
     Attack: {self.player.attack_power}
 ----------------------                      
 {self.enemy}:
@@ -162,7 +162,7 @@ class Player:
         self.max_hp = 30
         self.current_hp = 30
         self.attack_power = 7
-        self.current_weapon = "Hands (Rated E)"
+        self.current_weapon = None
         self.status = "Alive"
         self.enemy = None
 
@@ -173,7 +173,7 @@ class Player:
 
     def dmg_done(self):
         # Calculates outgoing damage with weapon multiplier
-        if self.current_weapon is not "Hands (Rated E)":
+        if self.current_weapon is not None:
             return self.current_weapon.dmg_multiplier * self.attack_power
         return self.attack_power
 
