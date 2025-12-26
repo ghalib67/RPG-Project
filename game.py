@@ -2,6 +2,8 @@ import os
 import random
 import keyboard
 import msvcrt
+import time
+
 
 class Game:
     # Handles the main game loop and turn system
@@ -12,12 +14,18 @@ class Game:
         self.choose_enemy()  # Select first enemy at start
         self.player.enemy = self.enemy  # Link player to enemy
 
+    def countdown(self, timer):
+        for i in range(3, 0, -1):
+            print(i)
+            time.sleep(1)
+
     def take_turn(self):
         # Player acts first, then enemy performs a random action
         choice = self.choose_action()
         print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
         self.player.actions[choice]()
         # Only allow enemy to act if still alive
+
         if self.enemy.status == "Alive":
             random.choice(self.enemy.actions)()
 
@@ -26,13 +34,15 @@ class Game:
         print("The game is starting...")
         print(f"The current enemy is {self.enemy}!")
         print("FIGHT!")
-        keyboard.read_event()
+        self.countdown(3)
 
     def enemy_defeated(self):
         # Handle enemy defeat and select next enemy
         print(f"You defeated {self.enemy}")
         self.choose_enemy()
         self.player.enemy = self.enemy
+        print(f"The next enemy is {self.enemy}\nGet Ready!")
+        self.countdown(3)
 
     def print_state(self):
         # Clears the screen and prints current game stats
