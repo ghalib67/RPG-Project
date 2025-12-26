@@ -13,7 +13,8 @@ class Game:
         self.enemies = enemies
         self.choose_enemy()  # Select first enemy at start
         self.player.enemy = self.enemy  # Link player to enemy
-
+        self.storage = {} # Will probably be a temporary attribute
+        self.storage[1] = Sword()
     def countdown(self, timer):
         for i in range(timer, 0, -1):
             print(i)
@@ -33,10 +34,9 @@ class Game:
         # Display game start message
         print("The game is starting...")
 
-        self.countdown(5)
+        #self.countdown(5)
 
         os.system("cls")
-        print("\033[2J", end="")
 
         print(r"""
         ==============================
@@ -45,19 +45,53 @@ class Game:
 
         1. Play Game
         2. Look at Scenery
+        3. Check the suspicious box
         0. Quit
         """)
 
         while True:
             try:
                 choice = int(input("> "))
-                if choice in (0, 1, 2):
+                if choice in (0, 1, 2, 3):
                     match choice:
                         case 1:
                             break
 
                         case 2:
                             print("You stare at the black void..")
+                            continue
+
+                        case 3:
+                            while True:
+                                if self.storage:
+                                    print("The box has:")
+                                    for key, value in self.storage.items():
+                                        print(f"{key}: {value}")
+
+                                else:
+                                    print("The box is empty.")
+                                    break
+
+                                try:
+                                    choice = int(input("\nChoose an item number (0 to cancel): > "))
+
+                                    if choice == 0:
+                                        print("You step away from the box.")
+                                        break
+
+                                    if choice in self.storage:
+                                        item = self.storage[choice]
+                                        print(f"You picked up {item}")
+                                        self.player.collect_item(item)
+                                        self.storage.pop(choice)
+                                        break
+
+                                    else:
+                                        print(f"Invalid choice. Choose from: {list(self.storage.keys())}")
+
+                                except ValueError:
+                                    print("Please enter a valid number.")
+
                             continue
 
                         case 0:
@@ -451,11 +485,15 @@ class Zombie(Enemy):
 
 if __name__ == "__main__":
     # Initialize game with player and enemies
-    player = Player()
+    """    player = Player()
     enemy = Goblin(player)
     enemy2 = Zombie(player)
     enemies = [enemy, enemy2]
     game = Game(player, enemies)
+    game.start_game()"""
+    player = Player()
+    print(player.current_weapon)
+    game = Game(player, [Goblin(player), Zombie(player)])
     game.start_game()
 
 
