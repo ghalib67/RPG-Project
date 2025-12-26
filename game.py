@@ -215,14 +215,13 @@ class Player:
                 self.items["Misc"][item.name] = item
 
     def equip_item(self):
-        # Inventory menu for equipping or using items
         misc = self.items["Misc"]
         weapons = self.items["Weapons"]
 
         menu = {}
         miscmenu = {}
 
-        # Display available weapons
+        # Display weapons
         if weapons:
             print("Weapons: ")
             for i, weapon in enumerate(weapons.values(), start=1):
@@ -231,7 +230,7 @@ class Player:
         else:
             print("No weapons available")
 
-        # Display available misc items
+        # Display misc
         if misc:
             print("Misc: ")
             for i, misc_item in enumerate(misc.values(), start=1):
@@ -244,44 +243,61 @@ class Player:
             print("You have no items.")
             return
 
-        # Item selection loop
         while True:
             print("\nChoose category:")
             print("1: Weapons")
             print("2: Misc")
+            print("0: Cancel")
 
-            category_choice = int(input("> "))
+            try:
+                category_choice = int(input("> "))
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
 
             match category_choice:
+                case 0:
+                    print("Cancelled.")
+                    return
+
                 case 1:
                     if not weapons:
                         print("No weapons to equip.")
                         continue
 
-                    choice = int(input("Choose weapon number: > "))
-                    if choice in menu:
-                        self.current_weapon = menu[choice]
-                        print(f"Equipped {menu[choice]}")
-                        return
-                    else:
-                        print("Invalid weapon choice.")
+                    try:
+                        choice = int(input("Choose weapon number (0 to cancel): > "))
+                        if choice == 0:
+                            continue
+                        if choice in menu:
+                            self.current_weapon = menu[choice]
+                            print(f"Equipped {menu[choice]}")
+                            return
+                        else:
+                            print(f"Invalid choice. Choose from: {list(menu.keys())}")
+                    except ValueError:
+                        print("Please enter a valid number.")
 
                 case 2:
                     if not misc:
                         print("No misc items.")
                         continue
 
-                    choice = int(input("Choose misc item number: > "))
-                    if choice in miscmenu:
-                        item = miscmenu[choice]
-                        print(f"Used {item}")
-                        return
-                    else:
-                        print("Invalid misc choice.")
+                    try:
+                        choice = int(input("Choose misc item number (0 to cancel): > "))
+                        if choice == 0:
+                            continue
+                        if choice in miscmenu:
+                            item = miscmenu[choice]
+                            print(f"Used {item}")
+                            return
+                        else:
+                            print(f"Invalid choice. Choose from: {list(miscmenu.keys())}")
+                    except ValueError:
+                        print("Please enter a valid number.")
 
                 case _:
-                    print("Invalid category choice.")
-
+                    print("Invalid category. Choose 1, 2, or 0.")
 
 class Enemy:
     # Base enemy class
