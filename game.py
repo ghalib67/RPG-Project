@@ -57,7 +57,17 @@ Enemy:
         for i in self.player.actions:
             print(f"\t{i}: {self.player.actions[i].__name__.replace("_", " ").title()}")
 
-        return int(input())
+        while True:
+            try:
+                choice = int(input("> "))
+                if choice in self.player.actions:
+                    return choice
+                else:
+                    self.print_state()
+                    print(f"Invalid choice. Choose from: {list(self.player.actions.keys())}")
+            except ValueError:
+                self.print_state()
+                print("Please enter a valid number.")
 
     def start_game(self):
         self.print_start()
