@@ -55,8 +55,8 @@ Player:
     HP: {self.player.current_hp} {"#" if self.player.blocking else ""}
     Weapon: {self.player.current_weapon}
     Attack: {self.player.attack_power}
-----------------------                      
-Enemy:
+----------------------                      `
+{self.enemy}:
     HP: {self.enemy.current_hp} {"#" if self.enemy.blocking else ""}
     Attack: {self.enemy.attack_power}
 ========================""")
