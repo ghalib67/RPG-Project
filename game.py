@@ -236,7 +236,7 @@ class Player:
         self.status = "Alive"
         self.enemy = None
 
-        self.actions = {1: self.attack, 2: self.heal, 3: self.block}
+        self.actions = {1: self.attack, 2: self.heal, 3: self.block, 4: self.equip_item}
         self.blocking = False
 
         self.items = {"Weapons": {}, "Misc": {}}
