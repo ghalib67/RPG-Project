@@ -211,7 +211,7 @@ class Sword(Weapon):
         # Sword's special attack
         damage = self.dmg_multiplier * self.player.attack_power + random.randint(1, 10)
         block = self.player.enemy.blocking
-        player.enemy.get_attacked(damage)
+        self.player.enemy.get_attacked(damage)
 
         if block:
             print(f"SLASH! The enemy was blocking! You only did {damage // 2} damage!")
@@ -226,6 +226,46 @@ class Sword(Weapon):
 
     def __repr__(self):
         return self.__str__()
+
+
+class Axe(Weapon):
+    def __init__(self, player):
+        super().__init__(2.5, "Axe", player)
+        self.actions = [self.heavy_chop]
+
+    def heavy_chop(self):
+        damage = int(self.dmg_multiplier * self.player.attack_power * 1.2)
+        self.player.enemy.get_attacked(damage)
+        print(f"🪓 HEAVY CHOP! {damage} damage!")
+        self.player.decrease_hp(2)  # Costs 2 HP to use
+        print("The heavy swing exhausted you! -2 HP")
+        return True
+
+    def __str__(self):
+        return "Axe"
+
+
+class Dagger(Weapon):
+    def __init__(self, player):
+        super().__init__(1.5, "Dagger", player)
+        self.actions = [self.quick_stab, self.poison_blade]
+
+    def quick_stab(self):
+        damage = self.dmg_multiplier * self.player.attack_power
+        self.player.enemy.get_attacked(damage)
+        print(f"🗡️ QUICK STAB! {damage} damage!")
+        return True
+
+    def poison_blade(self):
+        # Does less damage now, but enemy takes damage next turn too
+        damage = int(self.dmg_multiplier * self.player.attack_power * 0.8)
+        self.player.enemy.get_attacked(damage)
+        print(f"☠️ POISON BLADE! {damage} damage + poison effect!")
+        # You'd need to implement poison status effect for this to work fully
+        return True
+
+    def __str__(self):
+        return "Dagger"
 
 class Player:
     # Player stats, inventory, and actions
