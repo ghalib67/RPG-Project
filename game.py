@@ -15,6 +15,7 @@ class Game:
         self.player.enemy = self.enemy  # Link player to enemy
         self.storage = {} # Will probably be a temporary attribute
         self.storage[1] = Sword()
+
     def countdown(self, timer):
         for i in range(timer, 0, -1):
             print(i)
@@ -22,10 +23,21 @@ class Game:
 
     def take_turn(self):
         # Player acts first, then enemy performs a random action
-        choice = self.choose_action()
-        print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
-        self.player.actions[choice]()
-        # Only allow enemy to act if still alive
+        while True:
+            choice = self.player.choose_action()
+
+            if choice not in self.player.actions or choice == "":
+                print("Invalid choice.")
+                continue
+
+            action = self.player.actions[choice]
+            self.print_state()
+            print(f"Player chooses to {self.player.actions[choice].__name__.replace("_", " ").title()}")
+            end_turn = action()
+
+            if end_turn:
+                break
+            # Only allow enemy to act if still alive
 
         if self.enemy.status == "Alive":
             random.choice(self.enemy.actions)()
@@ -131,7 +143,7 @@ Player:
     Attack: {self.enemy.attack_power}
 ========================""")
 
-    def choose_action(self):
+    """def choose_action(self):
         # Displays available player actions and gets input
         while True:
             try:
@@ -143,7 +155,8 @@ Player:
                     print(f"Invalid choice. Choose from: {list(self.player.actions.keys())}")
             except ValueError:
                 self.print_state()
-                print("Please enter a valid number.")
+                print("Please enter a valid number.")"""
+
 
     def start_game(self):
         self.print_start()
@@ -269,6 +282,7 @@ class Player:
     def heal(self, amount=9):
         # Heal action
         self.increase_hp(amount)
+        return True
 
     def equip_weapon(self, weapon: Weapon):
         # Directly equips a weapon
@@ -286,9 +300,12 @@ class Player:
         else:
             print(f"A clean hit! Did {damage} damage!")
 
+        return True
+
     def block(self):
         # Reduces next incoming damage by half
         self.blocking = True
+        return True
 
     def collect_item(self, item):
         # Adds items to inventory based on type
@@ -382,14 +399,21 @@ class Player:
 
                 case _:
                     print("Invalid category. Choose 1, 2, or 0.")
-
+        return False
     def choose_action(self):
         # Displays available player actions and gets input
         print("Please choose an action:")
         for i in self.actions:
             print(f"\t{i}: {self.actions[i].__name__.replace("_", " ").title()}")
 
-        return int(input("> "))
+        while True:
+            try:
+                choice = int(input("> "))
+                return choice
+
+            except ValueError:
+                print("Please enter a valid number.")
+
 
 
 class Enemy:
