@@ -26,7 +26,7 @@ class Game:
         while True:
             choice = self.player.choose_action()
 
-            if choice not in self.player.actions or choice == "":
+            if choice not in self.player.actions:
                 print("Invalid choice.")
                 continue
 
@@ -143,21 +143,6 @@ Player:
     Attack: {self.enemy.attack_power}
 ========================""")
 
-    """def choose_action(self):
-        # Displays available player actions and gets input
-        while True:
-            try:
-                choice = self.player.choose_action()
-                if choice in self.player.actions:
-                    return choice
-                else:
-                    self.print_state()
-                    print(f"Invalid choice. Choose from: {list(self.player.actions.keys())}")
-            except ValueError:
-                self.print_state()
-                print("Please enter a valid number.")"""
-
-
     def start_game(self):
         self.print_start()
 
@@ -222,10 +207,19 @@ class Sword(Weapon):
     def __init__(self):
         super().__init__(2, "Sword")
 
-    def swing(self, player_attack_power):
-        # Calculates sword damage
-        print(self.dmg_multiplier * player_attack_power)
-        return self.dmg_multiplier * player_attack_power
+    def slash(self, player):
+        # Sword's special attack
+        damage = self.dmg_multiplier * player.attack_power
+        block = player.enemy.blocking
+        player.enemy.get_attacked(damage)
+
+        if block:
+            print(f"SLASH! The enemy was blocking! You only did {damage // 2} damage!")
+        else:
+            print(f"⚔️ POWERFUL SLASH! Did {damage} damage!")
+
+        return True  # End turn
+
 
     def __str__(self):
         return "Sword"
@@ -342,7 +336,7 @@ class Player:
 
         if not weapons and not misc:
             print("You have no items.")
-            return
+            return False
 
         while True:
             print("\nChoose category:")
@@ -359,7 +353,7 @@ class Player:
             match category_choice:
                 case 0:
                     print("Cancelled.")
-                    return
+                    return False
 
                 case 1:
                     if not weapons:
@@ -373,7 +367,7 @@ class Player:
                         if choice in menu:
                             self.current_weapon = menu[choice]
                             print(f"Equipped {menu[choice]}")
-                            return
+                            return False
                         else:
                             print(f"Invalid choice. Choose from: {list(menu.keys())}")
                     except ValueError:
@@ -391,7 +385,7 @@ class Player:
                         if choice in miscmenu:
                             item = miscmenu[choice]
                             print(f"Used {item}")
-                            return
+                            return False
                         else:
                             print(f"Invalid choice. Choose from: {list(miscmenu.keys())}")
                     except ValueError:
@@ -400,6 +394,7 @@ class Player:
                 case _:
                     print("Invalid category. Choose 1, 2, or 0.")
         return False
+
     def choose_action(self):
         # Displays available player actions and gets input
         print("Please choose an action:")
