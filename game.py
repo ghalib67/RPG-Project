@@ -546,6 +546,50 @@ class Zombie(Enemy):
     def __str__(self):
         return "Zombie"
 
+
+class Berserker(Enemy):
+    def __init__(self, target):
+        super().__init__(40, 5, target)
+        self.actions.append(self.attack)
+        self.actions.append(self.rage_attack)
+        self.blocking = False
+
+    def attack(self):
+        damage = self.attack_power
+        block = self.target.blocking
+        self.target.get_attacked(self.attack_power)
+
+        if block:
+            print(f"You were blocking! The enemy only did {damage // 2} damage.")
+        else:
+            print(f"The enemy got a clean hit: {damage} damage.")
+
+    def rage_attack(self):
+        # Gets stronger as HP gets lower
+        hp_percent = self.current_hp / 40
+        if hp_percent > 0.5:
+            damage = self.attack_power
+        else:
+            damage = int(self.attack_power * 1.8)
+            print("💢 BERSERKER RAGES!")
+
+        self.target.get_attacked(damage)
+        print(f"Berserker attacks for {damage} damage!")
+
+    def get_attacked(self, damage):
+        if self.blocking:
+            damage = int(damage / 2)
+            self.blocking = False
+
+        self.current_hp -= damage
+
+        if self.current_hp < 1:
+            self.current_hp = 0
+            self.status = "Dead"
+
+    def __str__(self):
+        return "Berserker"
+
 if __name__ == "__main__":
     # Initialize game with player and enemies
     """    player = Player()
