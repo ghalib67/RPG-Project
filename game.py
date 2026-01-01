@@ -133,13 +133,9 @@ Player:
 
     def choose_action(self):
         # Displays available player actions and gets input
-        print("Please choose an action:")
-        for i in self.player.actions:
-            print(f"\t{i}: {self.player.actions[i].__name__.replace("_", " ").title()}")
-
         while True:
             try:
-                choice = int(input("> "))
+                choice = self.player.choose_action()
                 if choice in self.player.actions:
                     return choice
                 else:
@@ -387,6 +383,15 @@ class Player:
                 case _:
                     print("Invalid category. Choose 1, 2, or 0.")
 
+    def choose_action(self):
+        # Displays available player actions and gets input
+        print("Please choose an action:")
+        for i in self.actions:
+            print(f"\t{i}: {self.actions[i].__name__.replace("_", " ").title()}")
+
+        return int(input("> "))
+
+
 class Enemy:
     # Base enemy class
 
@@ -497,4 +502,3 @@ if __name__ == "__main__":
     game.start_game()
 
 
-        
