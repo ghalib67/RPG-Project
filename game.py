@@ -1,6 +1,6 @@
 import os
 import random
-import keyboard
+#import keyboard
 import msvcrt
 import time
 
@@ -14,7 +14,7 @@ class Game:
         self.choose_enemy()  # Select first enemy at start
         self.player.enemy = self.enemy  # Link player to enemy
         self.storage = {} # Will probably be a temporary attribute
-        self.storage[1] = Sword()
+        self.storage[1] = Sword(self.player)
 
     def countdown(self, timer):
         for i in range(timer, 0, -1):
@@ -152,7 +152,7 @@ Player:
             while self.player.status == "Alive" and self.enemy.status == "Alive":
                 self.print_state()
                 self.take_turn()
-                keyboard.read_event()  # Wait for keypress
+                #keyboard.read_event()  # Wait for keypress
                 msvcrt.getch()
 
             # Check if player died
@@ -185,14 +185,14 @@ class Item:
         self.name = name
         self.classname = classname
 
-
 class Weapon(Item):
     # Base weapon class with damage multiplier
 
-    def __init__(self, dmg_multiplier, name):
+    def __init__(self, dmg_multiplier, name, player):
         super().__init__(name, "Weapon")
         self.dmg_multiplier = dmg_multiplier
-
+        self.actions = []
+        self.player = player
 
 class Misc(Item):
     # Non-weapon usable items
@@ -200,17 +200,17 @@ class Misc(Item):
     def __init__(self, name):
         super().__init__(name, "Misc")
 
-
 class Sword(Weapon):
     # Specific weapon implementation
 
-    def __init__(self):
-        super().__init__(2, "Sword")
+    def __init__(self,player):
+        super().__init__(2, "Sword", player)
+        self.actions = [self.slash]
 
-    def slash(self, player):
+    def slash(self):
         # Sword's special attack
-        damage = self.dmg_multiplier * player.attack_power
-        block = player.enemy.blocking
+        damage = self.dmg_multiplier * self.player.attack_power + random.randint(1, 10)
+        block = self.player.enemy.blocking
         player.enemy.get_attacked(damage)
 
         if block:
@@ -227,7 +227,6 @@ class Sword(Weapon):
     def __repr__(self):
         return self.__str__()
 
-
 class Player:
     # Player stats, inventory, and actions
 
@@ -238,8 +237,8 @@ class Player:
         self.current_weapon = None
         self.status = "Alive"
         self.enemy = None
-
-        self.actions = {1: self.attack, 2: self.heal, 3: self.block, 4: self.equip_item}
+        self.base_actions = {1: self.attack, 2: self.heal, 3: self.block, 4: self.equip_item}
+        self.actions = self.base_actions.copy()
         self.blocking = False
 
         self.items = {"Weapons": {}, "Misc": {}}
@@ -281,6 +280,9 @@ class Player:
     def equip_weapon(self, weapon: Weapon):
         # Directly equips a weapon
         self.current_weapon = weapon
+        self.actions = self.base_actions.copy()
+        for i, skill in enumerate(self.current_weapon.actions, start=len(self.actions) + 1):
+            self.actions[i] = skill
 
     def attack(self):
         # Attacks the enemy
@@ -365,7 +367,7 @@ class Player:
                         if choice == 0:
                             continue
                         if choice in menu:
-                            self.current_weapon = menu[choice]
+                            self.equip_weapon(menu[choice])
                             print(f"Equipped {menu[choice]}")
                             return False
                         else:
@@ -409,8 +411,6 @@ class Player:
             except ValueError:
                 print("Please enter a valid number.")
 
-
-
 class Enemy:
     # Base enemy class
 
@@ -420,7 +420,6 @@ class Enemy:
         self.actions = []
         self.target = target
         self.status = "Alive"
-
 
 class Goblin(Enemy):
     # Goblin enemy with attack and block abilities
