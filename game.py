@@ -11,8 +11,8 @@ class Game:
     def __init__(self, player):
         self.player = player
         self.enemies = [Goblin(player),Zombie(player),Berserker(player)]
-        self.choose_enemy()  # Select first enemy at start
-        self.player.enemy = self.enemy  # Link player to enemy
+        self.current_enemies = []  # Select first enemy at start
+        self.player.enemy = None  # Link player to enemy
         self.current_room = 1
         self.max_rooms = 5
 
@@ -21,18 +21,23 @@ class Game:
             print(i)
             time.sleep(1)
     
-    def generate_room(self):
-        room_enemies = []
-        for i in self.current_room:
-            room_enemies.append(self.choose_enemy())
+    def print_enemies(self):
+        enemies = [self.create_enemy_card(e) for e in self.current_enemies]
+        for i in range(len(enemies[0])):
+            for enemy in enemies:
+                print(enemy[i].ljust(20), end=" " * 8)
+            print()
+    
+    def generate_room_enemies(self):
+        self.current_enemies = []
+        for i in range(self.current_room + 1):
+            self.current_enemies.append(self.choose_enemy())
         
         if self.current_room == 5:
             boss = Berserker(self.player)
             boss.attack_power += 15
             boss.current_hp += 20
-            room_enemies.append(boss)
-        
-        return room_enemies
+            self.current_enemies.append(boss)
 
     def take_turn(self):
         # Player acts first, then enemy performs a random action
@@ -188,8 +193,15 @@ Player:
 
     def choose_enemy(self):
         # Randomly select and remove an enemy from the list
-        self.enemy = random.choice(self.enemies)
+        return random.choice(self.enemies)
         #self.enemies.remove(self.enemy)
+
+    def create_enemy_card(self, enemy):
+        return [
+        f"{enemy}:",
+        f"HP: {enemy.current_hp} {'🛡️' if enemy.blocking else ''}",
+        f"Attack: {enemy.attack_power}",
+    ]
 
 class Item:
     # Base class for all items
@@ -240,7 +252,6 @@ class Sword(Weapon):
     def __repr__(self):
         return self.__str__()
 
-
 class Axe(Weapon):
     def __init__(self, player):
         super().__init__(2.5, "Axe", player)
@@ -256,7 +267,6 @@ class Axe(Weapon):
 
     def __str__(self):
         return "Axe"
-
 
 class Dagger(Weapon):
     def __init__(self, player):
@@ -558,7 +568,6 @@ class Zombie(Enemy):
     def __str__(self):
         return "Zombie"
 
-
 class Berserker(Enemy):
     def __init__(self, target):
         super().__init__(40, 5, target)
@@ -614,5 +623,7 @@ if __name__ == "__main__":
     print(player.current_weapon)
     game = Game(player, [Goblin(player), Zombie(player)])
     game.start_game()"""
-
-
+    game = Game(Player())
+    game.generate_room_enemies()
+    game.print_enemies()
+    print(game.create_enemy_card(Goblin(Player())))
