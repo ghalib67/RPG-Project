@@ -8,18 +8,31 @@ import time
 class Game:
     # Handles the main game loop and turn system
 
-    def __init__(self, player, enemies):
+    def __init__(self, player):
         self.player = player
-        self.enemies = enemies
+        self.enemies = [Goblin(player),Zombie(player),Berserker(player)]
         self.choose_enemy()  # Select first enemy at start
         self.player.enemy = self.enemy  # Link player to enemy
-        self.storage = {} # Will probably be a temporary attribute
-        self.storage[1] = Sword(self.player)
+        self.current_room = 1
+        self.max_rooms = 5
 
     def countdown(self, timer):
         for i in range(timer, 0, -1):
             print(i)
             time.sleep(1)
+    
+    def generate_room(self):
+        room_enemies = []
+        for i in self.current_room:
+            room_enemies.append(self.choose_enemy())
+        
+        if self.current_room == 5:
+            boss = Berserker(self.player)
+            boss.attack_power += 15
+            boss.current_hp += 20
+            room_enemies.append(boss)
+        
+        return room_enemies
 
     def take_turn(self):
         # Player acts first, then enemy performs a random action
@@ -52,7 +65,7 @@ class Game:
 
         print(r"""
         ==============================
-              ⚔️  TEXT RPG  ⚔️
+                TEXT RPG  
         ==============================
 
         1. Play Game
@@ -176,7 +189,7 @@ Player:
     def choose_enemy(self):
         # Randomly select and remove an enemy from the list
         self.enemy = random.choice(self.enemies)
-        self.enemies.remove(self.enemy)
+        #self.enemies.remove(self.enemy)
 
 class Item:
     # Base class for all items
@@ -453,7 +466,6 @@ class Player:
 
 class Enemy:
     # Base enemy class
-
     def __init__(self, hp: int, attack_power: int, target):
         self.current_hp = hp
         self.attack_power = attack_power
@@ -598,9 +610,9 @@ if __name__ == "__main__":
     enemies = [enemy, enemy2]
     game = Game(player, enemies)
     game.start_game()"""
-    player = Player()
+    """player = Player()
     print(player.current_weapon)
     game = Game(player, [Goblin(player), Zombie(player)])
-    game.start_game()
+    game.start_game()"""
 
 
