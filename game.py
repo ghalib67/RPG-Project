@@ -25,10 +25,15 @@ class Game:
     
     def print_enemies(self):
         enemies = [self.create_enemy_card(e) for e in self.current_enemies]
-        for i in range(len(enemies[0])):
-            for enemy in enemies:
-                print(enemy[i].ljust(20), end=" " * 8)
-            print()
+        if enemies:
+            for i in range(len(enemies[0])):
+                for enemy in enemies:
+                    print(enemy[i].ljust(20), end=" " * 8)
+                print()
+
+        else:
+            print()    
+        
 
     def generate_room_enemies(self):
         self.current_enemies = []
@@ -307,8 +312,8 @@ class Player:
     # Player stats, inventory, and actions
 
     def __init__(self):
-        self.max_hp = 30
-        self.current_hp = 30
+        self.max_hp = 1000
+        self.current_hp = 1000
         self.attack_power = 70
         self.current_weapon = None
         self.status = "Alive"
@@ -348,7 +353,7 @@ class Player:
         if self.current_hp > self.max_hp:
             self.current_hp = self.max_hp
 
-    def heal(self, amount=9):
+    def heal(self, amount=90):
         # Heal action
         self.increase_hp(amount)
         return True
