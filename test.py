@@ -1,8 +1,14 @@
-block = """line 1   line 1
-line 2   line 2
-line 3   line 3
-"""
+test = [1,2,3,4]
+stuff = ['asda','asdad','asdads','afaf']
+for i, j in enumerate(stuff, start=1):
+    print(i,j)
 
-for i in range(3):
-    print(block)
-    
+from game import Enemy,Goblin,Player
+player = Player()
+
+goblin = Goblin(player)
+
+goblin.get_attacked(40)
+print(goblin.status)
+goblin = Goblin(player)
+print(goblin.status)

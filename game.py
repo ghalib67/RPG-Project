@@ -11,10 +11,12 @@ class Game:
     def __init__(self, player):
         self.player = player
         self.enemies = [Goblin(player),Zombie(player),Berserker(player)]
+        self.enemy = None
         self.current_enemies = []  # Select first enemy at start
         self.player.enemy = None  # Link player to enemy
         self.current_room = 1
         self.max_rooms = 5
+        self.rewards = [Sword(player), Axe(player),Dagger(player)]
 
     def countdown(self, timer):
         for i in range(timer, 0, -1):
@@ -27,20 +29,48 @@ class Game:
             for enemy in enemies:
                 print(enemy[i].ljust(20), end=" " * 8)
             print()
-    
+
     def generate_room_enemies(self):
         self.current_enemies = []
         for i in range(self.current_room + 1):
-            self.current_enemies.append(self.choose_enemy())
+            self.current_enemies.append([self.choose_enemy(),i + 1])
         
         if self.current_room == 5:
             boss = Berserker(self.player)
             boss.attack_power += 15
             boss.current_hp += 20
-            self.current_enemies.append(boss)
+            self.current_enemies.append([boss, 7])
+        
+        if self.current_room > 5:
+            return False
+        
+        self.current_room += 1
+        return True
 
     def take_turn(self):
-        # Player acts first, then enemy performs a random action
+        print("Choose an enemy: ")
+        while True:
+            for enemy in self.current_enemies:
+                print(f"{enemy[1]}: {enemy[0]}")
+            try:
+                choice = int(input("> "))
+            
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+            
+            if choice <= self.current_enemies[-1][1]:
+                for enemy in self.current_enemies:
+                    if choice == enemy[1]:
+                        self.player.enemy = enemy[0]
+                        self.enemy = enemy
+                        break
+                break
+            
+            else:
+                print("Please input a valid number: ")
+                
+        # Player acts first, then enemy performs a random action  
         while True:
             choice = self.player.choose_action()
 
@@ -56,9 +86,13 @@ class Game:
             if end_turn:
                 break
             # Only allow enemy to act if still alive
-
-        if self.enemy.status == "Alive":
-            random.choice(self.enemy.actions)()
+        enemies_state = self.ensure_current_enemies()
+        if enemies_state:
+            enemy = random.choice(self.current_enemies)[0]
+            random.choice(enemy.actions)()
+            return True
+        
+        return False
 
     def print_start(self):
         # Display game start message
@@ -75,7 +109,6 @@ class Game:
 
         1. Play Game
         2. Look at Scenery
-        3. Check the suspicious box
         0. Quit
         """)
 
@@ -91,39 +124,6 @@ class Game:
                             print("You stare at the black void..")
                             continue
 
-                        case 3:
-                            while True:
-                                if self.storage:
-                                    print("The box has:")
-                                    for key, value in self.storage.items():
-                                        print(f"{key}: {value}")
-
-                                else:
-                                    print("The box is empty.")
-                                    break
-
-                                try:
-                                    choice = int(input("\nChoose an item number (0 to cancel): > "))
-
-                                    if choice == 0:
-                                        print("You step away from the box.")
-                                        break
-
-                                    if choice in self.storage:
-                                        item = self.storage[choice]
-                                        print(f"You picked up {item}")
-                                        self.player.collect_item(item)
-                                        self.storage.pop(choice)
-                                        break
-
-                                    else:
-                                        print(f"Invalid choice. Choose from: {list(self.storage.keys())}")
-
-                                except ValueError:
-                                    print("Please enter a valid number.")
-
-                            continue
-
                         case 0:
                             print("in progress :p")
                             continue
@@ -132,7 +132,10 @@ class Game:
             except ValueError:
                 print("Enter a number.")
 
-        print(f"The current enemy is {self.enemy}!")
+        print(f"The current enemies are:")
+        for enemy in self.current_enemies:
+            print(f"\t{enemy}")
+
         print("FIGHT!")
         self.countdown(3)
 
@@ -148,18 +151,17 @@ class Game:
         # Clears the screen and prints current game stats
         os.system("cls")
         print("\033[2J", end="")
-
-        print(
-            f"""========================
+        self.print_enemies()
+        self.print_player()
+        
+    def print_player(self):
+                print(
+f"""========================
 Player:
     HP: {self.player.current_hp} {"🛡️" if self.player.blocking else ""}
     Weapon: {self.player.current_weapon if self.player.current_weapon is not None else "Hands (Rated E)"}
     Attack: {self.player.attack_power}
-----------------------                      
-{self.enemy}:
-    HP: {self.enemy.current_hp} {"🛡️" if self.enemy.blocking else ""}
-    Attack: {self.enemy.attack_power}
-========================""")
+----------------------""")          
 
     def start_game(self):
         self.print_start()
@@ -167,22 +169,23 @@ Player:
         # Main game loop - continues while player is alive and enemies remain
         while self.player.status == "Alive":
             # Combat loop for current enemy
-            while self.player.status == "Alive" and self.enemy.status == "Alive":
-                self.print_state()
-                self.take_turn()
-                #keyboard.read_event()  # Wait for keypress
-                msvcrt.getch()
+            check = self.generate_room_enemies()
+            if check:
+                while self.player.status == "Alive" and self.current_enemies:
+                    self.print_state()
+                    self.take_turn()
+                    #keyboard.read_event()  # Wait for keypress
+                    msvcrt.getch()
+                # Check if player died
+                if self.player.status == "Dead":
+                    break
+                    
+                if not self.current_enemies:
+                    if self.current_room > 5:
+                        break
 
-            # Check if player died
-            if self.player.status == "Dead":
-                break
-
-            # Enemy is dead - check if more enemies exist
-            if len(self.enemies) > 0:
-                self.enemy_defeated()
-            else:
-                # No more enemies - player wins!
-                break
+                    else:
+                        self.enemies = [Goblin(self.player),Zombie(self.player),Berserker(self.player)]
 
         # Display final game state and result
         self.print_state()
@@ -197,12 +200,22 @@ Player:
         #self.enemies.remove(self.enemy)
 
     def create_enemy_card(self, enemy):
+        enemy = enemy[0]
         return [
         f"{enemy}:",
         f"HP: {enemy.current_hp} {'🛡️' if enemy.blocking else ''}",
         f"Attack: {enemy.attack_power}",
     ]
 
+    def ensure_current_enemies(self):
+        if self.player.enemy.status == "Dead":
+            self.current_enemies.remove(self.enemy)
+            for i,enemy in enumerate(self.current_enemies,start=1):
+                enemy[1] = i
+
+        if  self.current_enemies:
+            return True
+        
 class Item:
     # Base class for all items
 
@@ -296,7 +309,7 @@ class Player:
     def __init__(self):
         self.max_hp = 30
         self.current_hp = 30
-        self.attack_power = 7
+        self.attack_power = 70
         self.current_weapon = None
         self.status = "Alive"
         self.enemy = None
@@ -612,18 +625,5 @@ class Berserker(Enemy):
         return "Berserker"
 
 if __name__ == "__main__":
-    # Initialize game with player and enemies
-    """    player = Player()
-    enemy = Goblin(player)
-    enemy2 = Zombie(player)
-    enemies = [enemy, enemy2]
-    game = Game(player, enemies)
-    game.start_game()"""
-    """player = Player()
-    print(player.current_weapon)
-    game = Game(player, [Goblin(player), Zombie(player)])
-    game.start_game()"""
     game = Game(Player())
-    game.generate_room_enemies()
-    game.print_enemies()
-    print(game.create_enemy_card(Goblin(Player())))
+    game.start_game()
